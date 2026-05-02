@@ -106,3 +106,4 @@ cp .env.example .env && nano .env
 screen -S viral-launcher
 python main.py
 ```
+# deploy test
