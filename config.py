@@ -21,16 +21,6 @@ class Config:
     nitter_keywords: list[str] = field(default_factory=lambda: [
         "coin", "token", "memecoin", "solana", "crypto", "pump", "moon", "rug"
     ])
-    reddit_subreddits: list[str] = field(default_factory=lambda: [
-        "CryptoCurrency", "SolanaMemeCoins", "memecoins",
-        "solana", "CryptoMoonShots", "shitcoinmoonshots"
-    ])
-
-    # Reddit API
-    reddit_client_id: str = ""
-    reddit_client_secret: str = ""
-    reddit_user_agent: str = "viral-launcher/1.0"
-
     # Virality scoring thresholds
     min_virality_score: float = 0.65
     keyword_spike_weight: float = 0.35
@@ -65,9 +55,6 @@ class Config:
         return cls(
             wallet_path=os.getenv("WALLET_PATH", "data/wallet.json"),
             nitter_instances=os.getenv("NITTER_INSTANCES", "").split(",") if os.getenv("NITTER_INSTANCES") else cls.__dataclass_fields__["nitter_instances"].default_factory(),
-            reddit_client_id=os.getenv("REDDIT_CLIENT_ID", ""),
-            reddit_client_secret=os.getenv("REDDIT_CLIENT_SECRET", ""),
-            reddit_user_agent=os.getenv("REDDIT_USER_AGENT", "viral-launcher/1.0"),
             min_virality_score=float(os.getenv("MIN_VIRALITY_SCORE", "0.65")),
             base_sol_per_launch=float(os.getenv("BASE_SOL", "0.1")),
             max_sol_per_launch=float(os.getenv("MAX_SOL", "1.0")),

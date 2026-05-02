@@ -8,7 +8,6 @@ import asyncio
 import logging
 from config import Config
 from scrapers.nitter import NitterScraper
-from scrapers.reddit import RedditScraper
 from scoring.engine import ViralityEngine
 from launcher.pumpfun import PumpFunLauncher
 from bot.telegram_bot import TelegramBot
@@ -34,7 +33,6 @@ async def main():
 
     # Init scrapers
     nitter = NitterScraper(config)
-    reddit = RedditScraper(config)
 
     # Init scoring engine
     engine = ViralityEngine(config)
@@ -51,21 +49,17 @@ async def main():
     # Run Telegram bot + main loop concurrently
     await asyncio.gather(
         tg_bot.start(),
-        run_loop(config, nitter, reddit, engine, launcher, dedup, tg_bot),
+        run_loop(config, nitter, engine, launcher, dedup, tg_bot),
     )
 
 
-async def run_loop(config, nitter, reddit, engine, launcher, dedup, tg_bot):
+async def run_loop(config, nitter, engine, launcher, dedup, tg_bot):
     """Main polling loop — scrape → score → launch."""
     while True:
         try:
             logger.info("🔍 Scraping for trends...")
 
-            # Gather raw trend data from all sources
-            twitter_trends = await nitter.get_trends()
-            reddit_trends = await reddit.get_trends()
-
-            all_trends = twitter_trends + reddit_trends
+            all_trends = await nitter.get_trends()
 
             # Score each trend
             scored = engine.score_all(all_trends)
