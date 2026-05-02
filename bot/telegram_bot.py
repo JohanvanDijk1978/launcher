@@ -3,6 +3,7 @@ Telegram bot — control panel and notification system.
 Commands: /start, /stop, /status, /launches, /score, /config
 """
 
+import asyncio
 import logging
 from telegram import Update
 from telegram.ext import (
@@ -42,7 +43,16 @@ class TelegramBot:
         self.app.add_handler(CommandHandler("help", self._cmd_help))
 
         logger.info("Telegram bot started")
-        await self.app.run_polling(stop_signals=None)
+        await self.app.initialize()
+        await self.app.start()
+        await self.app.updater.start_polling(drop_pending_updates=True)
+        # Keep running until cancelled
+        try:
+            await asyncio.Event().wait()
+        finally:
+            await self.app.updater.stop()
+            await self.app.stop()
+            await self.app.shutdown()
 
     async def notify(self, message: str):
         """Send a notification to the configured chat."""
